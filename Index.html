@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Pathfinder Round Manager</title>
+        <link rel="stylesheet" href="css/bootstrap.css" />
+        <link rel="stylesheet" href="css/font-awesome.css" />
+        <link rel="stylesheet" href="css/Site.css" />
+    </head>
+    <body ng-app="PathfinderRoundManagerApp">
+        <div class="container" ng-controller="IndexController">
+            <div class="col-md-2">
+                <ul class="menu">
+                    <li ng-repeat="item in menu" class="btn btn-primary">
+                        <i class="fa fa-arrow-circle-right"></i> <span ng-click="item.ClickAction()">{{item.Name}}</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-10">
+                <ul class="fighters" ng-if="fighters !== null">
+                    <li ng-repeat="fighter in fighters | orderBy: '-Init'" ng-click="selectFighter(fighter.Id)" ng-class="{true:'selected', false:''}[fighter.Selected]">
+                        <div class="name">{{fighter.Name}} <i class="clock fa fa-clock-o" ng-if="fighter.Selected"></i></div>
+                        <div class="round-time" ng-if="fighter.RoundTimeInSeconds > 0">
+                            {{formatRoundTime(fighter.RoundTimeInSeconds)}}
+                        </div>
+                        <div class="init">
+                            Init: {{Math.floor(fighter.Init)}}
+                            <div class="d20">{{Math.floor(fighter.Init)-fighter.InitBonus}}</div><div class="init-bonus">{{fighter.InitBonus}}</div>
+                        </div>
+                        <div class="delete" ng-click="deleteFighter(fighter); $event.stopPropagation();">
+                            <i class="fa fa-times-circle"></i>
+                        </div>
+                    </li>
+                    <li class="nextround btn btn-primary" ng-click="nextRound()">
+                        Next round
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-10 col-offset-md-2" ng-if="rounds.length > 0">
+                <h3>
+                    Previous rounds:
+                    <button class="btn btn-primary" ng-click="exportRoundsToCSV()">
+                        <i class="fa fa-download"></i> .csv
+                    </button>
+                    <button class="btn btn-danger" ng-click="clearRounds()">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </h3>
+                <ul class="rounds">
+                    <li ng-repeat="round in rounds | orderBy: '-Number'">
+                        <h4>Round #{{round.Number}}</h4>
+                        <ul class="chart">
+                            <li ng-repeat="fighter in round.Fighters">
+                                <div style="height:{{Math.round(fighter.RoundTimeInSeconds*100/round.TotalTime)}}%" title="{{fighter.Name}}">{{Math.round(fighter.RoundTimeInSeconds*100/round.TotalTime)}}%</div>
+                            </li>
+                        </ul>
+                        <hr />
+                    </li>
+                </ul>
+            </div>
+            <div id="autosaved" ng-if="autosaving == true" style="opacity:{{autosavingFade}}">Autosaved</div>
+        </div>
+
+        <script src="Scripts/angular.js"></script>
+        <script src="Scripts/Application/PathfinderRoundManager.js"></script>
+    </body>
+</html>
