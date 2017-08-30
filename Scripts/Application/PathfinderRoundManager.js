@@ -23,8 +23,11 @@ prm.factory('RoundsFactory', ['$http', function ($http) {
     }
     return {
         SaveRound: function SaveRound(fighters) {
-            var rounds = this.GetRounds();
-            rounds.push({ Fighters: fighters, Number: rounds.length + 1, TotalTime: sumOfRoundTimes(fighters) });
+			var totalTime = sumOfRoundTimes(fighters);
+            if (totalTime == 0) return;
+			var rounds = this.GetRounds();
+			var round = { Fighters: fighters, Number: rounds.length + 1, TotalTime: totalTime };
+            rounds.push(round);
             localStorage.rounds = angular.toJson(rounds);
         },
         GetRounds: function GetRounds() {
@@ -90,16 +93,21 @@ prm.controller('IndexController', ['$scope', '$interval', 'FightersFactory', 'Ro
     }
 
     function addFighter() {
-        var name = prompt("Name ?");
-        var init = prompt("Total init ?");
-        var initBonus = prompt("Init bonus ?");
+		$('#addFighterModal').modal("show");
+	}
+	
+	$scope.confirmAddFighter = function confirmAddFighter() {
+		var name = $("#name").val();
+        var init = $("#init").val();
+        var initBonus = $("#initBonus").val();
 
 		if (angular.isDefined(name) && angular.isDefined(init) && angular.isDefined(initBonus)
 			&& name !== "" && init !== "" && initBonus !== "") {
 			addFighterWithStats(name, init, initBonus);
+			$('#addFighterModal').modal("hide");
 		}
     }
-
+	
     function tick(f) {
         if ($scope.fighters[f] === undefined) unselectFighter(f);
         else if (!$scope.fighters[f].Selected) unselectFighter(f);
@@ -213,6 +221,7 @@ prm.controller('IndexController', ['$scope', '$interval', 'FightersFactory', 'Ro
 	$scope.clearRounds = function clearRounds() {
 		if (confirm("Clear all existing rounds? This can't be undone")) {
 			RoundsFactory.ClearRounds();
+			$scope.rounds = [];
 		}
 	}
 }]);

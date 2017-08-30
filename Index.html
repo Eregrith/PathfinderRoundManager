@@ -33,7 +33,7 @@
                         </div>
                     </li>
                     <li class="nextround btn btn-primary" ng-click="nextRound()">
-                        Next round
+                        <i class="fa fa-step-forward"></i> Next round
                     </li>
                 </ul>
             </div>
@@ -48,7 +48,7 @@
                     </button>
                 </h3>
                 <ul class="rounds">
-                    <li ng-repeat="round in rounds | orderBy: '-Number'">
+                    <li ng-if="round.TotalTime != 0" ng-repeat="round in rounds | orderBy: '-Number'">
                         <h4>Round #{{round.Number}}</h4>
                         <ul class="chart">
                             <li ng-repeat="fighter in round.Fighters">
@@ -59,10 +59,31 @@
                     </li>
                 </ul>
             </div>
+			<div class="modal" id="addFighterModal">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h3>Add a fighter</h3>
+						</div>
+						<div class="modal-body">
+							<input id="name" class="form-control" type="text" placeholder="Name" /><br/>
+							<input id="init" class="form-control" type="numeric" placeholder="Init" /><br/>
+							<input id="initBonus" class="form-control" type="numeric" placeholder="Bonus" />
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-primary" ng-click="confirmAddFighter()">OK</button>
+							<button type="button" class="btn btn-warning" data-dismiss="modal" aria-label="Close">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
             <div id="autosaved" ng-if="autosaving == true" style="opacity:{{autosavingFade}}">Autosaved</div>
-        </div>
+		</div>
 
+        <script src="Scripts/jquery-3.2.1.min.js"></script>
         <script src="Scripts/angular.js"></script>
+        <script src="Scripts/bootstrap.js"></script>
         <script src="Scripts/Application/PathfinderRoundManager.js"></script>
     </body>
 </html>
