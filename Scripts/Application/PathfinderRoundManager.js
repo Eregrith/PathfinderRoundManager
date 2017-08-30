@@ -62,7 +62,7 @@ prm.controller('IndexController', ['$scope', '$interval', 'FightersFactory', 'Ro
         return {
             Id: fighterId++,
             Name: name,
-            Init: init*1 + (bonus/10),
+            Init: init*1 + (bonus/100),
             InitBonus: bonus,
             Selected: false,
             Timer: undefined,
