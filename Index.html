@@ -16,6 +16,14 @@
                         <i class="fa fa-arrow-circle-right"></i> <span ng-click="item.ClickAction()">{{item.Name}}</span>
                     </li>
                 </ul>
+                <ul class="presets">
+                    <li ng-repeat="preset in presets" class="btn">
+                        <i class="fa fa-user"></i> <span ng-click="addFighterFromPreset(preset.Name, preset.InitBonus)">{{preset.Name}} ({{preset.InitBonus}})
+                        <div style="display:inline;color:red" ng-click="deletePreset(preset); $event.stopPropagation();">
+                            <i class="fa fa-times-circle"></i>
+                        </div></span>
+                    </li>
+                </ul>
             </div>
             <div class="col-md-10">
                 <ul class="fighters" ng-if="fighters !== null">
@@ -24,6 +32,9 @@
                         <div class="round-time" ng-if="fighter.RoundTimeInSeconds > 0">
                             {{formatRoundTime(fighter.RoundTimeInSeconds)}}
                         </div>
+						<div class="damage">
+							{{fighter.Damage}} <div ng-click="hurtFighter(fighter);" style="display:inline-block"><i class="fa fa-tint"></i></div>
+						</div>
                         <div class="init">
                             Init: {{Math.floor(fighter.Init)}}
                             <div class="d20">{{Math.floor(fighter.Init)-fighter.InitBonus}}</div><div class="init-bonus">{{fighter.InitBonus}}</div>
@@ -73,6 +84,41 @@
 						</div>
 						<div class="modal-footer">
 							<button class="btn btn-primary" ng-click="confirmAddFighter()">OK</button>
+							<button type="button" class="btn btn-warning" data-dismiss="modal" aria-label="Close">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal" id="addPresetModal">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h3>Add a preset</h3>
+						</div>
+						<div class="modal-body">
+							<input id="presetName" class="form-control" type="text" placeholder="Name" /><br/>
+							<input id="presetInitBonus" class="form-control" type="numeric" placeholder="Bonus" />
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-primary" ng-click="confirmAddPreset()">OK</button>
+							<button type="button" class="btn btn-warning" data-dismiss="modal" aria-label="Close">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal" id="hurtFighterModal">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h3>Hurt {{hurtingFighter.Name}} ?</h3>
+						</div>
+						<div class="modal-body">
+							<input id="damageAmount" class="form-control" type="number" placeholder="Damage" />
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-primary" ng-click="confirmHurtFighter()">OK</button>
 							<button type="button" class="btn btn-warning" data-dismiss="modal" aria-label="Close">Cancel</button>
 						</div>
 					</div>

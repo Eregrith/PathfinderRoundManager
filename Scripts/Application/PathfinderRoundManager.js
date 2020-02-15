@@ -2,14 +2,20 @@
 
 prm.factory('FightersFactory', ['$http', function ($http) {
     return {
-        SaveFighters: function SaveFighters(fighters) {
+        SaveFighters: function SaveFighters(fighters, presets) {
             localStorage.fighters = angular.toJson(fighters);
+            localStorage.presets = angular.toJson(presets);
         },
-        GetFighters: function GetFighters(fighter) {
+        GetFighters: function GetFighters() {
             fighters = angular.fromJson(localStorage.fighters);
             fighters = fighters || [];
             return fighters;
-        }
+        },
+		GetPresets: function GetPresets() {
+			presets = angular.fromJson(localStorage.presets);
+			presets = presets || [];
+			return presets;
+		}
     }
 }]);
 prm.factory('RoundsFactory', ['$http', function ($http) {
@@ -43,19 +49,27 @@ prm.factory('RoundsFactory', ['$http', function ($http) {
 
 prm.controller('IndexController', ['$scope', '$interval', 'FightersFactory', 'RoundsFactory', function ($scope, $interval, FightersFactory, RoundsFactory) {
     var fighterId = 0;
+	var presetId = 0;
 
     $scope.fighters = FightersFactory.GetFighters();
+	$scope.presets = FightersFactory.GetPresets();
     for (f in $scope.fighters) {
         if ($scope.fighters[f].Selected) selectFighter(f);
         if ($scope.fighters[f].Id > fighterId)
             fighterId = $scope.fighters[f].Id;
     }
+    for (f in $scope.presets) {
+        if ($scope.presets[f].Id > presetId)
+            presetId = $scope.presets[f].Id;
+    }
     fighterId++;
+    presetId++;
     $scope.rounds = RoundsFactory.GetRounds();
     $scope.Math = window.Math;
 
     $scope.menu = [
-        { Name: 'Add fighter', ClickAction: addFighter }
+        { Name: 'Add fighter', ClickAction: addFighter },
+        { Name: 'Add preset', ClickAction: addPreset }
     ];
 
     function makeFighter(name, init, bonus) {
@@ -66,7 +80,16 @@ prm.controller('IndexController', ['$scope', '$interval', 'FightersFactory', 'Ro
             InitBonus: bonus,
             Selected: false,
             Timer: undefined,
-            RoundTimeInSeconds: 0
+            RoundTimeInSeconds: 0,
+            Damage: 0
+        };
+    }
+
+    function makePreset(name, bonus) {
+        return {
+			Id: presetId++,
+            Name: name,
+            InitBonus: bonus,
         };
     }
 
@@ -85,15 +108,34 @@ prm.controller('IndexController', ['$scope', '$interval', 'FightersFactory', 'Ro
     function addInPlace(fighter) {
         $scope.fighters.splice(locationOfFighter(fighter) + 1, 0, fighter);
     }
+    function addInPresets(fighter) {
+		$scope.presets.push(fighter);
+    }
 
     function addFighterWithStats(name, init, initbous) {
         var fighter = makeFighter(name, init, initbous);
         
         addInPlace(fighter);
     }
+	
+    function addPresetWithStats(name, initbous) {
+        var fighter = makePreset(name, initbous);
+        
+        addInPresets(fighter);
+    }
 
     function addFighter() {
 		$('#addFighterModal').modal("show");
+	}
+	
+	$scope.addFighterFromPreset = function addFighterFromPreset(name, init) {
+		$("#name").val(name);
+		$("#initBonus").val(init);
+		$('#addFighterModal').modal("show");
+	}
+
+    function addPreset() {
+		$('#addPresetModal').modal("show");
 	}
 	
 	$scope.confirmAddFighter = function confirmAddFighter() {
@@ -105,6 +147,17 @@ prm.controller('IndexController', ['$scope', '$interval', 'FightersFactory', 'Ro
 			&& name !== "" && init !== "" && initBonus !== "") {
 			addFighterWithStats(name, init, initBonus);
 			$('#addFighterModal').modal("hide");
+		}
+    }
+	
+	$scope.confirmAddPreset = function confirmAddPreset() {
+		var name = $("#presetName").val();
+        var initBonus = $("#presetInitBonus").val();
+
+		if (angular.isDefined(name) && angular.isDefined(initBonus)
+			&& name !== "" && initBonus !== "") {
+			addPresetWithStats(name, initBonus);
+			$('#addPresetModal').modal("hide");
 		}
     }
 	
@@ -173,10 +226,32 @@ prm.controller('IndexController', ['$scope', '$interval', 'FightersFactory', 'Ro
         $scope.rounds = RoundsFactory.GetRounds();
     }
 
+	$scope.hurtingFighter = undefined;
+	$scope.hurtFighter = function (fighter) {
+		$scope.hurtingFighter = fighter;
+        $("#hurtFighterModal").modal("show");
+        return false;
+	}
+
+	$scope.confirmHurtFighter = function () {
+        if (isNaN($scope.hurtingFighter.Damage))
+            $scope.hurtingFighter.Damage = 0;
+		$scope.hurtingFighter.Damage += parseInt($("#damageAmount").val());
+		$("#damageAmount").val("");
+		$("#hurtFighterModal").modal("hide");
+	}
+	
     $scope.deleteFighter = function (fighter) {
         for (i in fighters) {
             if (fighters[i].Id == fighter.Id)
                 fighters.splice(i, 1);
+        }
+    }
+
+    $scope.deletePreset = function (preset) {
+        for (i in presets) {
+            if (presets[i].Id == preset.Id)
+                presets.splice(i, 1);
         }
     }
 
@@ -185,7 +260,7 @@ prm.controller('IndexController', ['$scope', '$interval', 'FightersFactory', 'Ro
     var autosaveInterval = $interval(function autosave() {
         if (suspendAutoSave) return;
         $scope.autosavingFade = 1;
-        FightersFactory.SaveFighters($scope.fighters);
+        FightersFactory.SaveFighters($scope.fighters, $scope.presets);
         $scope.autosaving = true;
         $interval(function () { $scope.autosavingFade -= 0.1; }, 100, 10);
         $interval(function () { $scope.autosaving = false; }, 1000, 1);

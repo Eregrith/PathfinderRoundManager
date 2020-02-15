@@ -38,10 +38,11 @@ ul.menu li {
     height:20px;
     margin-right: 16px;
     margin-left: 15px;
-    padding-left: 15px;
+    padding-left: 0;
     font-size: 12pt;
     font-weight: bold;
     color: blue;
+	text-align: center;
 }
 
 .fighters {
@@ -179,4 +180,9 @@ ul.menu li {
     text-align:center;
     content:attr(title);
     word-wrap: break-word;
+}
+
+.damage {
+    width: 50px;
+    display: inline-block;
 }
