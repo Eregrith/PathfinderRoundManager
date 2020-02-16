@@ -1,0 +1,28 @@
+<div ng-controller="PresetsController">
+    <ul class="presets">
+        <li ng-repeat="preset in presets" class="btn" ng-click="addFighterFromPreset(preset.Name, preset.InitBonus)">
+            <i class="fa fa-user"></i> <span>{{preset.Name}} ({{preset.InitBonus}})
+            <div style="display:inline;color:red" ng-click="deletePreset(preset); $event.stopPropagation();">
+                <i class="fa fa-times-circle"></i>
+            </div></span>
+        </li>
+    </ul>
+    <div class="modal" id="addPresetModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3>Add a preset</h3>
+                </div>
+                <div class="modal-body">
+                    <input id="presetName" class="form-control" type="text" placeholder="Name" /><br/>
+                    <input id="presetInitBonus" class="form-control" type="numeric" placeholder="Bonus" />
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ng-click="confirmAddPreset()">OK</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal" aria-label="Close">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

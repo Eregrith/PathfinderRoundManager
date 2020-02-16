@@ -79,11 +79,9 @@ ul.menu li {
 
 .fighters .init {
     float: right;
-    display:inline-block;
     position: relative;
     top: 23px;
     left: -40px;
-    margin-left: 20px;
     font-size: 15pt;
 }
 .fighters .init-bonus {
@@ -99,16 +97,15 @@ ul.menu li {
     }
 
 .delete {
-    display:inline-block;
     float:right;
     position:relative;
     top: 19px;
-    left: 150px;
+    left: 115px;
     color: darkred;
+    cursor: pointer;
 }
 .delete:hover {
     color: crimson;
-    cursor: pointer;
 }
 
 .selected .delete {
@@ -183,6 +180,12 @@ ul.menu li {
 }
 
 .damage {
-    width: 50px;
     display: inline-block;
+    border: 1px solid red;
+    border-radius: 10px;
+    cursor:pointer;
+}
+
+.fighterDamage {
+    color: red;
 }
